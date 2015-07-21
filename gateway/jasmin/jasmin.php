@@ -36,6 +36,7 @@ switch (_OP_) {
 				'Manage jasmin' => _('Manage jasmin'),
 				'Gateway name' => _('Gateway name'),
 				'Jasmin send SMS URL' => _('Jasmin send SMS URL'),
+				'Callback URL' => _('Callback URL'),
 				'API username' => _('API username'),
 				'API password' => _('API password'),
 				'Module sender ID' => _('Module sender ID'),
