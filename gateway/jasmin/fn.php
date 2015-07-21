@@ -58,7 +58,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2BE", "auto");
 				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2", "auto");
 				$sms_msg = mb_convert_encoding($sms_msg, "UTF-8", "auto");
-				$unicode_query_string = "&coding=2"; // added at the of query string if unicode
+				$unicode_query_string = "&coding=8"; // UCS2
 			}
 		}
 		
