@@ -23,10 +23,10 @@ Follow below steps in order:
    cp -rR gateway/jasmin /var/www/html/playsms/plugin/gateway/
    ```
 
-3. Insert `db/install.sql` to playSMS database
+3. Insert `gateway/jasmin/db/install.sql` to playSMS database
 
    ```
-   mysql -uroot -p playsms < db/install.sql
+   mysql -uroot -p playsms < gateway/jasmin/db/install.sql
    ```
 
 4. Restart `playsmsd`
