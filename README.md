@@ -11,6 +11,10 @@ Compatible | playSMS 1.1
 playSMS    | http://playsms.org
 Jasmin     | http://jasminsms.com
 
+# Installation
+
+Explained in [INSTALL.md](INSTALL.md)
+
 # License
 
-[Apache License 2.0](https://github.com/antonraharja/jasmin-playsms/blob/master/LICENSE)
+[Apache License 2.0](LICENSE)
