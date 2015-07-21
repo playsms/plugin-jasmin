@@ -58,11 +58,11 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2BE", "auto");
 				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2", "auto");
 				$sms_msg = mb_convert_encoding($sms_msg, "UTF-8", "auto");
-				$unicode_query_string = "&type=unicode"; // added at the of query string if unicode
+				$unicode_query_string = "&coding=2"; // added at the of query string if unicode
 			}
 		}
 		
-		$query_string = "api_username=" . $plugin_config['jasmin']['api_username'] . "&api_password=" . $plugin_config['jasmin']['api_password'] . "&to=" . urlencode($sms_to) . "&from=" . urlencode($sms_sender) . "&text=" . urlencode($sms_msg) . $unicode_query_string . "&status-report-req=1&client-ref=" . $smslog_id;
+		$query_string = "username=" . $plugin_config['jasmin']['api_username'] . "&password=" . $plugin_config['jasmin']['api_password'] . "&to=" . urlencode($sms_to) . "&from=" . urlencode($sms_sender) . "&content=" . urlencode($sms_msg) . $unicode_query_string . "&dlr=no";
 		$url = $plugin_config['jasmin']['url'] . "?" . $query_string;
 		
 		_log("url:[" . $url . "]", 3, "jasmin_hook_sendsms");
@@ -76,28 +76,33 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 			) 
 		);
 		$context = stream_context_create($opts);
-		$resp = json_decode(file_get_contents($plugin_config['jasmin']['url'], FALSE, $context), TRUE);
+		$resp = file_get_contents($plugin_config['jasmin']['url'], FALSE, $context);
 		
-		if ($resp['message-count']) {
-			$c_status = $resp['messages'][0]['status'];
-			$c_message_id = $resp['messages'][0]['message-id'];
-			$c_network = $resp['messages'][0]['network'];
-			$c_error_text = $resp['messages'][0]['error-text'];
-			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " status:" . $c_status . " error:" . $c_error_text . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
+		// Success "07033084-5cfd-4812-90a4-e4d24ffb6e3d"
+		// Error "No route found"
+		$resp = explode(' ', $resp, 2);
+		
+		if ($resp[0] == 'Success') {
+			$c_message_id = $resp[1];
+			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
 			$db_query = "
-				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin (local_smslog_id,remote_smslog_id,status,network,error_text)
-				VALUES ('$smslog_id','$c_message_id','$c_status','$c_network','$c_error_text')";
+				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin (local_smslog_id, remote_smslog_id)
+				VALUES ('$smslog_id', '$c_message_id')";
 			$id = @dba_insert_id($db_query);
-			if ($id && ($c_status == 0)) {
+			if ($id) {
 				$ok = true;
 				$p_status = 1;
 				dlr($smslog_id, $uid, $p_status);
 			}
 		} else {
 			// even when the response is not what we expected we still print it out for debug purposes
-			$resp = str_replace("\n", " ", $resp);
-			$resp = str_replace("\r", " ", $resp);
-			_log("failed smslog_id:" . $smslog_id . " resp:" . $resp, 2, "jasmin_hook_sendsms");
+			if ($resp[0] == 'Error') {
+				$resp = $resp[1];
+			} else {
+				$resp = str_replace("\n", " ", $resp);
+				$resp = str_replace("\r", " ", $resp);
+			}
+			_log("failed smslog_id:" . $smslog_id . " resp:" . $resp . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
 		}
 	}
 	if (!$ok) {
