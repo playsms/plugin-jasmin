@@ -29,7 +29,7 @@ $callback_url = str_replace("//", "/", $callback_url);
 $callback_url = "http://" . $callback_url;
 
 switch (_OP_) {
-	case "manage" :
+	case "manage":
 		if ($err = TRUE) {
 			$error_content = _dialog();
 		}
@@ -39,22 +39,19 @@ switch (_OP_) {
 				'DIALOG_DISPLAY' => $error_content,
 				'Manage jasmin' => _('Manage jasmin'),
 				'Gateway name' => _('Gateway name'),
-				'Jasmin URL' => _('Jasmin URL'),
+				'Jasmin send SMS URL' => _('Jasmin send SMS URL'),
 				'API username' => _('API username'),
 				'API password' => _('API password'),
 				'Module sender ID' => _('Module sender ID'),
 				'Module timezone' => _('Module timezone'),
 				'Save' => _('Save'),
 				'Notes' => _('Notes'),
-				'HINT_JSON_FORMAT' => _hint(_('Use JSON format URL')),
 				'HINT_FILL_PASSWORD' => _hint(_('Fill to change the API password')),
-				'HINT_GLOBAL_SENDER' => _hint(_('Max. 16 numeric or 11 alphanumeric char. empty to disable')),
+				'HINT_MODULE_SENDER' => _hint(_('Max. 16 numeric or 11 alphanumeric char. empty to disable')),
 				'HINT_TIMEZONE' => _hint(_('Eg: +0700 for Jakarta/Bangkok timezone')),
 				'CALLBACK_URL_IS' => _('Your callback URL is'),
 				'CALLBACK_URL_ACCESSIBLE' => _('Your callback URL should be accessible from Jasmin'),
 				'JASMIN_PUSH_DLR' => _('Jasmin will push DLR and incoming SMS to your callback URL'),
-				'JASMIN_IS_BULK' => _('Jasmin is a bulk SMS provider'),
-				'JASMIN_FREE_CREDIT' => _('free credits are available for testing purposes'),
 				'BUTTON_BACK' => _back('index.php?app=main&inc=core_gateway&op=gateway_list'),
 				'status_active' => $status_active,
 				'jasmin_param_url' => $plugin_config['jasmin']['url'],
@@ -66,12 +63,12 @@ switch (_OP_) {
 		);
 		_p(tpl_apply($tpl));
 		break;
-	case "manage_save" :
+	case "manage_save":
 		$up_url = $_POST['up_url'];
 		$up_api_username = $_POST['up_api_username'];
 		$up_api_password = $_POST['up_api_password'];
 		$up_module_sender = $_POST['up_module_sender'];
-		$up_global_timezone = $_POST['up_global_timezone'];
+		$up_datetime_timezone = $_POST['up_datetime_timezone'];
 		$_SESSION['dialog']['info'][] = _('No changes have been made');
 		if ($up_url && $up_api_username) {
 			if ($up_api_password) {
@@ -84,7 +81,7 @@ switch (_OP_) {
 				api_username='$up_api_username',
 				" . $api_password_change . "
 				module_sender='$up_module_sender',
-				datetime_timezone='$up_global_timezone'";
+				datetime_timezone='$up_datetime_timezone'";
 			if (@dba_affected_rows($db_query)) {
 				$_SESSION['dialog']['info'][] = _('Gateway module configurations has been saved');
 			}
