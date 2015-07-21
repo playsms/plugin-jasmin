@@ -24,10 +24,6 @@ if (!auth_isadmin()) {
 
 include $core_config['apps_path']['plug'] . "/gateway/jasmin/config.php";
 
-$callback_url = $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/plugin/gateway/jasmin/callback.php";
-$callback_url = str_replace("//", "/", $callback_url);
-$callback_url = "http://" . $callback_url;
-
 switch (_OP_) {
 	case "manage":
 		if ($err = TRUE) {
@@ -49,27 +45,27 @@ switch (_OP_) {
 				'HINT_FILL_PASSWORD' => _hint(_('Fill to change the API password')),
 				'HINT_MODULE_SENDER' => _hint(_('Max. 16 numeric or 11 alphanumeric char. empty to disable')),
 				'HINT_TIMEZONE' => _hint(_('Eg: +0700 for Jakarta/Bangkok timezone')),
-				'CALLBACK_URL_IS' => _('Your callback URL is'),
+				'CALLBACK_URL_IS' => _('Your current callback URL is'),
 				'CALLBACK_URL_ACCESSIBLE' => _('Your callback URL should be accessible from Jasmin'),
 				'JASMIN_PUSH_DLR' => _('Jasmin will push DLR and incoming SMS to your callback URL'),
 				'BUTTON_BACK' => _back('index.php?app=main&inc=core_gateway&op=gateway_list'),
 				'status_active' => $status_active,
 				'jasmin_param_url' => $plugin_config['jasmin']['url'],
+				'jasmin_param_callback_url' => $plugin_config['jasmin']['callback_url'],
 				'jasmin_param_api_username' => $plugin_config['jasmin']['api_username'],
 				'jasmin_param_module_sender' => $plugin_config['jasmin']['module_sender'],
-				'jasmin_param_datetime_timezone' => $plugin_config['jasmin']['datetime_timezone'],
-				'callback_url' => $callback_url 
+				'jasmin_param_datetime_timezone' => $plugin_config['jasmin']['datetime_timezone'] 
 			) 
 		);
 		_p(tpl_apply($tpl));
 		break;
 	case "manage_save":
 		$up_url = $_POST['up_url'];
+		$up_callback_url = $_POST['up_callback_url'];
 		$up_api_username = $_POST['up_api_username'];
 		$up_api_password = $_POST['up_api_password'];
 		$up_module_sender = $_POST['up_module_sender'];
 		$up_datetime_timezone = $_POST['up_datetime_timezone'];
-		$_SESSION['dialog']['info'][] = _('No changes have been made');
 		if ($up_url && $up_api_username) {
 			if ($up_api_password) {
 				$api_password_change = "api_password='$up_api_password',";
@@ -78,13 +74,18 @@ switch (_OP_) {
 				UPDATE " . _DB_PREF_ . "_gatewayJasmin_config
 				SET c_timestamp='" . mktime() . "',
 				url='$up_url',
+				callback_url='$callback_url',
 				api_username='$up_api_username',
 				" . $api_password_change . "
 				module_sender='$up_module_sender',
 				datetime_timezone='$up_datetime_timezone'";
 			if (@dba_affected_rows($db_query)) {
 				$_SESSION['dialog']['info'][] = _('Gateway module configurations has been saved');
+			} else {
+				$_SESSION['dialog']['info'][] = _('No changes have been made');
 			}
+		} else {
+			$_SESSION['dialog']['info'][] = _('No changes have been made');
 		}
 		header("Location: " . _u('index.php?app=main&inc=gateway_jasmin&op=manage'));
 		exit();
