@@ -21,8 +21,6 @@ $plugin_config['jasmin']['_smsc_config_'] = array(
 	'datetime_timezone' => _('Module timezone') 
 );
 
-//$gateway_number = $plugin_config['jasmin']['module_sender'];
-
 // insert to left menu array
 //if (isadmin()) {
 //	$menutab_gateway = $core_config['menutab']['gateway'];

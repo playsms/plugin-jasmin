@@ -35,7 +35,7 @@ if (is_array($requests)) {
 	foreach ($requests as $key => $val) {
 		$log .= $key . ':' . $val . ' ';
 	}
-	logger_print("pushed " . $log, 2, "jasmin callback");
+	_log("pushed " . $log, 2, "jasmin callback");
 }
 
 $remote_smslog_id = $requests['messageId'];
@@ -66,7 +66,7 @@ if ($remote_smslog_id && $client_ref && $status) {
 				$p_status = 2;
 				break; // failed
 		}
-		logger_print("dlr uid:" . $uid . " smslog_id:" . $smslog_id . " message_id:" . $remote_smslog_id . " status:" . $status, 2, "jasmin callback");
+		_log("dlr uid:" . $uid . " smslog_id:" . $smslog_id . " message_id:" . $remote_smslog_id . " status:" . $status, 2, "jasmin callback");
 		dlr($smslog_id, $uid, $p_status);
 		ob_end_clean();
 		exit();
@@ -80,6 +80,6 @@ $message = htmlspecialchars_decode(urldecode($requests['text']));
 $sms_receiver = $requests['to'];
 $smsc = $requests['smsc'];
 if ($remote_smslog_id && $message) {
-	logger_print("incoming smsc:" . $smsc . " message_id:" . $remote_smslog_id . " s:" . $sms_sender . " d:" . $sms_receiver, 2, "jasmin callback");
+	_log("incoming smsc:" . $smsc . " message_id:" . $remote_smslog_id . " s:" . $sms_sender . " d:" . $sms_receiver, 2, "jasmin callback");
 	recvsms($sms_datetime, $sms_sender, $message, $sms_receiver, $smsc);
 }

@@ -65,17 +65,8 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 		$query_string = "api_username=" . $plugin_config['jasmin']['api_username'] . "&api_password=" . $plugin_config['jasmin']['api_password'] . "&to=" . urlencode($sms_to) . "&from=" . urlencode($sms_sender) . "&text=" . urlencode($sms_msg) . $unicode_query_string . "&status-report-req=1&client-ref=" . $smslog_id;
 		$url = $plugin_config['jasmin']['url'] . "?" . $query_string;
 		
-		_log("url:[" . $url . "]", 3, "jasmin outgoing");
+		_log("url:[" . $url . "]", 3, "jasmin_hook_sendsms");
 		
-		// fixme anton
-		// rate limit to 1 second per submit - jasmin rule
-		//sleep(1);
-		
-
-		// old way
-		// $resp = json_decode(file_get_contents($url), true);
-		
-
 		// new way
 		$opts = array(
 			'http' => array(
@@ -92,7 +83,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 			$c_message_id = $resp['messages'][0]['message-id'];
 			$c_network = $resp['messages'][0]['network'];
 			$c_error_text = $resp['messages'][0]['error-text'];
-			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " status:" . $c_status . " error:" . $c_error_text, 2, "jasmin outgoing");
+			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " status:" . $c_status . " error:" . $c_error_text . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
 			$db_query = "
 				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin (local_smslog_id,remote_smslog_id,status,network,error_text)
 				VALUES ('$smslog_id','$c_message_id','$c_status','$c_network','$c_error_text')";
@@ -106,12 +97,13 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 			// even when the response is not what we expected we still print it out for debug purposes
 			$resp = str_replace("\n", " ", $resp);
 			$resp = str_replace("\r", " ", $resp);
-			_log("failed smslog_id:" . $smslog_id . " resp:" . $resp, 2, "jasmin outgoing");
+			_log("failed smslog_id:" . $smslog_id . " resp:" . $resp, 2, "jasmin_hook_sendsms");
 		}
 	}
 	if (!$ok) {
 		$p_status = 2;
 		dlr($smslog_id, $uid, $p_status);
 	}
+	
 	return $ok;
 }
