@@ -13,20 +13,25 @@ Follow below steps in order:
    ```
    cd /usr/local/src
    git clone https://github.com/antonraharja/jasmin-playsms.git
+   cd jasmin-playsms
+   ls -l
    ```
 
 2. Copy gateway to playSMS `plugin/gateway/`
 
    ```
-   cd /usr/local/src
-   cd jasmin-playsms
-   cp -rR gateway /var/www/html/playsms/plugin/
+   cp -rR gateway/jasmin /var/www/html/playsms/plugin/gateway/
    ```
 
 3. Insert `db/install.sql` to playSMS database
 
    ```
-   cd /usr/local/src
-   cd jasmin-playsms
    mysql -uroot -p playsms < db/install.sql
+   ```
+
+4. Restart `playsmsd`
+
+   ```
+   playsmsd restart
+   playsmsd check
    ```
