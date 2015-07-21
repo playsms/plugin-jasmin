@@ -11,7 +11,7 @@ Follow below steps in order:
 1. Clone this repo to your playSMS server
 
    ```
-   cd /usr/local/src
+   cd ~
    git clone https://github.com/antonraharja/jasmin-playsms.git
    cd jasmin-playsms
    ls -l
