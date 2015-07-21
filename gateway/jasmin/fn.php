@@ -86,7 +86,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 			$c_message_id = $resp[1];
 			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
 			$db_query = "
-				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin (local_smslog_id, remote_smslog_id)
+				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin_log (local_smslog_id, remote_smslog_id)
 				VALUES ('$smslog_id', '$c_message_id')";
 			$id = @dba_insert_id($db_query);
 			if ($id) {
