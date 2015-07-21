@@ -85,6 +85,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 		
 		if ($resp[0] == 'Success') {
 			$c_message_id = $resp[1];
+			$c_message_id = str_replace('"', '', $c_message_id);
 			_log("sent smslog_id:" . $smslog_id . " message_id:" . $c_message_id . " smsc:" . $smsc, 2, "jasmin_hook_sendsms");
 			$db_query = "
 				INSERT INTO " . _DB_PREF_ . "_gatewayJasmin (local_smslog_id, remote_smslog_id)
@@ -99,6 +100,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 			// even when the response is not what we expected we still print it out for debug purposes
 			if ($resp[0] == 'Error') {
 				$resp = $resp[1];
+				$resp = str_replace('"', '', $resp);
 			} else {
 				$resp = str_replace("\n", " ", $resp);
 				$resp = str_replace("\r", " ", $resp);
