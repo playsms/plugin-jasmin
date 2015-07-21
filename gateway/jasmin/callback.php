@@ -38,15 +38,12 @@ if (is_array($requests)) {
 	_log("pushed " . $log, 2, "jasmin callback");
 }
 
-$remote_smslog_id = $requests['messageId'];
+$remote_smslog_id = $requests['id'];
+$message_status = $requests['message_status'];
 
 // delivery receipt
-$client_ref = $requests['client-ref'];
-$status = $requests['status'];
-if ($remote_smslog_id && $client_ref && $status) {
-	$db_query = "
-		SELECT local_smslog_id FROM " . _DB_PREF_ . "_gatewayJasmin_log
-		WHERE local_smslog_id='$client_ref' AND remote_smslog_id='$remote_smslog_id'";
+if ($remote_smslog_id && $message_status) {
+	$db_query = "SELECT local_smslog_id FROM " . _DB_PREF_ . "_gatewayJasmin_log WHERE remote_smslog_id='$remote_smslog_id'";
 	$db_result = dba_query($db_query);
 	$db_row = dba_fetch_array($db_result);
 	$smslog_id = $db_row['local_smslog_id'];
@@ -54,32 +51,34 @@ if ($remote_smslog_id && $client_ref && $status) {
 		$data = sendsms_get_sms($smslog_id);
 		$uid = $data['uid'];
 		$p_status = $data['p_status'];
-		switch ($status) {
-			case "delivered":
+		switch ($message_status) {
+			case "ESME_ROK":
 				$p_status = 3;
 				break; // delivered
-			case "buffered":
-			case "accepted":
-				$p_status = 1;
-				break; // sent
 			default :
 				$p_status = 2;
 				break; // failed
 		}
 		_log("dlr uid:" . $uid . " smslog_id:" . $smslog_id . " message_id:" . $remote_smslog_id . " status:" . $status, 2, "jasmin callback");
 		dlr($smslog_id, $uid, $p_status);
+		
 		ob_end_clean();
+		echo "ACK/Jasmin";
 		exit();
 	}
 }
 
 // incoming message
-$sms_datetime = urldecode($requests['message-timestamp']);
-$sms_sender = $requests['msisdn'];
-$message = htmlspecialchars_decode(urldecode($requests['text']));
+$sms_datetime = core_get_datetime();
+$sms_sender = $requests['from'];
+$message = htmlspecialchars_decode(urldecode($requests['content']));
 $sms_receiver = $requests['to'];
-$smsc = $requests['smsc'];
+$smsc = $requests['origin-connector'];
 if ($remote_smslog_id && $message) {
-	_log("incoming smsc:" . $smsc . " message_id:" . $remote_smslog_id . " s:" . $sms_sender . " d:" . $sms_receiver, 2, "jasmin callback");
+	_log("incoming smsc:" . $smsc . " message_id:" . $remote_smslog_id . " from:" . $sms_sender . " to:" . $sms_receiver . " content:[" . $message . "]", 2, "jasmin callback");
 	recvsms($sms_datetime, $sms_sender, $message, $sms_receiver, $smsc);
+	
+	ob_end_clean();
+	echo "ACK/Jasmin";
+	exit();
 }
