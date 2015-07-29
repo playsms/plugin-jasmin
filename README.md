@@ -4,8 +4,8 @@ playSMS gateway plugin for Jasmin Gateway via Jasmin HTTP API
 
 Info       | Value
 ---------- | ---------------------------------
-Author     | Anton Raharja <antonrd@gmail.com>
-Update     | 150720
+Author     | Anton Raharja `<antonrd@gmail.com>`
+Update     | 150730
 Version    | 1.0
 Compatible | playSMS 1.1
 playSMS    | http://playsms.org
