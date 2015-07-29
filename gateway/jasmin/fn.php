@@ -56,9 +56,9 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 		if ($unicode) {
 			if (function_exists('mb_convert_encoding')) {
 				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2BE", "auto");
-				// $sms_msg = mb_convert_encoding($sms_msg, "UCS-2", "auto");
-				$sms_msg = mb_convert_encoding($sms_msg, "UTF-8", "auto");
-				$unicode_query_string = "&coding=2"; // added at the of query string if unicode
+				$sms_msg = mb_convert_encoding($sms_msg, "UCS-2", "auto");
+				// $sms_msg = mb_convert_encoding($sms_msg, "UTF-8", "auto");
+				$unicode_query_string = "&coding=8"; // added at the of query string if unicode
 			}
 		}
 		
@@ -66,7 +66,7 @@ function jasmin_hook_sendsms($smsc, $sms_sender, $sms_footer, $sms_to, $sms_msg,
 		$query_string .= "&dlr=yes&dlr-level=2&dlr-url=" . $plugin_config['jasmin']['callback_url'];
 		$url = $plugin_config['jasmin']['url'] . "?" . $query_string;
 		
-		_log("url:[" . $url . "]", 3, "jasmin_hook_sendsms");
+		_log("send url:[" . $url . "]", 3, "jasmin_hook_sendsms");
 		
 		// new way
 		$opts = array(
