@@ -76,6 +76,8 @@ $sms_receiver = $requests['to'];
 $smsc = $requests['origin-connector'];
 if ($remote_smslog_id && $message) {
 	_log("incoming smsc:" . $smsc . " message_id:" . $remote_smslog_id . " from:" . $sms_sender . " to:" . $sms_receiver . " content:[" . $message . "]", 2, "jasmin callback");
+	$sms_sender = addslashes($sms_sender);
+	$message = addslashes($message);
 	recvsms($sms_datetime, $sms_sender, $message, $sms_receiver, $smsc);
 	
 	ob_end_clean();
